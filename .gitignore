@@ -20,7 +20,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-elb_plug-*.tar
+elb_cognito_plug-*.tar
 
 # Editor
 /.elixir_ls

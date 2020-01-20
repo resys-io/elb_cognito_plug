@@ -1,6 +1,4 @@
-# ELBPlug
-
-**TODO: Add description**
+# ELBCognitoPlug
 
 ## Installation
 

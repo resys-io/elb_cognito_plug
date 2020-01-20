@@ -1,4 +1,4 @@
-defmodule ELBPlug.MixProject do
+defmodule ELBCognitoPlug.MixProject do
   use Mix.Project
 
   def project do

@@ -1,4 +1,4 @@
-defmodule ELBPlug do
+defmodule ELBCognitoPlug do
   @behaviour Plug
   import Plug.Conn
 
@@ -9,7 +9,7 @@ defmodule ELBPlug do
   def call(conn, opts) do
     case get_req_header(conn, "x-amzn-oidc-accesstoken") do
       [data] ->
-        {:ok, claims} = ELBPlug.Cognito.JWT.verify_jwt(data, opts[:region], opts[:pool_id])
+        {:ok, claims} = ELBCognitoPlug.Cognito.JWT.verify_jwt(data, opts[:region], opts[:pool_id])
 
         cond do
           opts[:has_group] and Enum.member?(claims["cognito:groups"], opts[:has_group]) ->

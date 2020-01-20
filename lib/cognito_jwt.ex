@@ -1,4 +1,4 @@
-defmodule ELBPlug.Cognito.JWT do
+defmodule ELBCognitoPlug.Cognito.JWT do
   @ets_table __MODULE__
 
   def verify_jwt(jwt, region, pool_id) do

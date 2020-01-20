@@ -17,3 +17,11 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/elb_plug](https://hexdocs.pm/elb_plug).
 
+## Usage
+```elixir
+plug ELBCognitoPlug,
+  region: Application.get_env(:my_app, :cognito_region),
+  pool_id: Application.get_env(:my_app, :cognito_pool_id),
+  require_header: false,
+  has_group: "oprh.admin"
+```

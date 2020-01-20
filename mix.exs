@@ -4,6 +4,16 @@ defmodule ELBCognitoPlug.MixProject do
   def project do
     [
       app: :elb_cognito_plug,
+      name: "ELB Cognito Plug",
+      description: "Verifies AWS Cognito JWTs passed in by AWS ELB",
+      package: %{
+        files: [
+          "lib",
+          "mix.exs",
+          "LICENSE"
+        ],
+        licenses: ["MIT"]
+      },
       version: "0.1.0",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,

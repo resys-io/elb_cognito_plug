@@ -12,7 +12,7 @@ defmodule ELBCognitoPlug do
         {:ok, claims} = ELBCognitoPlug.Cognito.JWT.verify_jwt(data, opts[:region], opts[:pool_id])
 
         cond do
-          opts[:has_group] and Enum.member?(claims["cognito:groups"], opts[:has_group]) ->
+          opts[:has_group] && Enum.member?(claims["cognito:groups"], opts[:has_group]) ->
             conn
 
           opts[:has_group] ->

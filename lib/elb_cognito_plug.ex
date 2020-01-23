@@ -5,7 +5,7 @@ defmodule ELBCognitoPlug do
 
   def init(opts) do
     opts
-    |> Keyword.put_new(:keys_module, ELBCognitoPlug.Cognito.TeslaCachedKeys)
+    |> Keyword.put_new(:keys_module, ELBCognitoPlug.TeslaCachedKeys)
   end
 
   def call(conn, opts) do

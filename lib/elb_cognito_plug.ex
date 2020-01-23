@@ -5,12 +5,13 @@ defmodule ELBCognitoPlug do
 
   def init(opts) do
     opts
+    |> Keyword.put_new(:keys_module, ELBCognitoPlug.Cognito.TeslaCachedKeys)
   end
 
   def call(conn, opts) do
     case get_req_header(conn, "x-amzn-oidc-accesstoken") do
       [data] ->
-        {:ok, claims} = verify_jwt(data, opts[:region], opts[:pool_id])
+        {:ok, claims} = verify_jwt(data, opts[:keys_module], opts[:region], opts[:pool_id])
 
         conn
         |> check_has_group(claims, opts[:has_group])

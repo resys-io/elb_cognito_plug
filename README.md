@@ -33,4 +33,8 @@ plug ELBCognitoPlug,
   has_group: "admin",
   # Assigns the decoded JWT data to the given atom
   assign_to: :user_info
+  # Allows you to define custom key-fetching behaviour. Default behaviour pulls key from AWS with
+  # Tesla and caches them in ETS. See `ELBCognitoPlug.Cognito.Keys` and 
+  # `ELBCognitoPlug.Cognito.TeslaCachedKeys`
+  keys_module: MyKeyModule
 ```

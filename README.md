@@ -1,5 +1,5 @@
 # ELBCognitoPlug
-This plug uses ELB authentication headers and verifies that the given JWT was signed by Cognito.
+This plug uses ELB authentication headers and verifies that the provided JWT was signed by Cognito.
 Additionally, you can specify a group that is required to be present; otherwise the request is
 denied.
 

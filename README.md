@@ -23,5 +23,6 @@ plug ELBCognitoPlug,
   region: Application.get_env(:my_app, :cognito_region),
   pool_id: Application.get_env(:my_app, :cognito_pool_id),
   require_header: false,
-  has_group: "admin"
+  has_group: "admin",
+  assign_to: :user_info
 ```

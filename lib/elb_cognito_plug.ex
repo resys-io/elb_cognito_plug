@@ -11,16 +11,9 @@ defmodule ELBCognitoPlug do
       [data] ->
         {:ok, claims} = ELBCognitoPlug.Cognito.JWT.verify_jwt(data, opts[:region], opts[:pool_id])
 
-        cond do
-          opts[:has_group] && Enum.member?(claims["cognito:groups"], opts[:has_group]) ->
-            conn
-
-          opts[:has_group] ->
-            deny(conn)
-
-          true ->
-            conn
-        end
+        conn
+        |> check_has_group(claims, opts[:has_group])
+        |> assign_claims(claims, opts[:assign_to])
 
       [] ->
         if Keyword.get(opts, :require_header, true) do
@@ -35,5 +28,23 @@ defmodule ELBCognitoPlug do
     conn
     |> send_resp(401, "")
     |> halt()
+  end
+
+  defp check_has_group(conn, _claims, nil) do
+    conn
+  end
+
+  defp check_has_group(conn, claims, group) do
+    if Enum.member?(claims["cognito:groups"], group) do
+      conn
+    else
+      deny(conn)
+    end
+  end
+
+  defp assign_claims(conn, _claims, nil), do: conn
+
+  defp assign_claims(conn, claims, to) do
+    assign(conn, to, claims)
   end
 end

@@ -1,7 +1,7 @@
 defmodule ELBCognitoPlug do
   @behaviour Plug
   import Plug.Conn
-  import ELBCognitoPlug.Cognito.JWT
+  import ELBCognitoPlug.JWT
 
   def init(opts) do
     opts
@@ -9,15 +9,18 @@ defmodule ELBCognitoPlug do
   end
 
   def call(conn, opts) do
-    case get_req_header(conn, "x-amzn-oidc-accesstoken") do
-      [data] ->
-        {:ok, claims} = verify_jwt(data, opts[:keys_module], opts[:region], opts[:pool_id])
+    case {get_req_header(conn, "x-amzn-oidc-accesstoken"),
+          get_req_header(conn, "x-amzn-oidc-data")} do
+      {[access_token], [data]} ->
+        verification_opts = Keyword.take(opts, [:keys_module, :region, :pool_id])
+        {:ok, cognito_claims} = verify_cognito_jwt(access_token, verification_opts)
+        {:ok, elb_claims} = verify_elb_jwt(data, verification_opts)
 
         conn
-        |> check_has_group(claims, opts[:has_group])
-        |> assign_claims(claims, opts[:assign_to])
+        |> check_has_group(cognito_claims, opts[:has_group])
+        |> assign_claims(cognito_claims, elb_claims, opts[:assign_to])
 
-      [] ->
+      _else ->
         if Keyword.get(opts, :require_header, true) do
           deny(conn)
         else
@@ -44,9 +47,18 @@ defmodule ELBCognitoPlug do
     end
   end
 
-  defp assign_claims(conn, _claims, nil), do: conn
+  defp assign_claims(conn, _, _, nil), do: conn
 
-  defp assign_claims(conn, claims, to) do
-    assign(conn, to, claims)
+  defp assign_claims(conn, cognito_claims, elb_claims, to) do
+    data = %{
+      given_name: elb_claims["given_name"],
+      family_name: elb_claims["family_name"],
+      email: elb_claims["email"],
+      sub: cognito_claims["sub"],
+      username: cognito_claims["username"],
+      groups: cognito_claims["cognito:groups"]
+    }
+
+    assign(conn, to, data)
   end
 end

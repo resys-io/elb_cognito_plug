@@ -27,7 +27,7 @@ plug ELBCognitoPlug,
   region: Application.get_env(:my_app, :cognito_region),
   # Cognito pool id (required)
   pool_id: Application.get_env(:my_app, :cognito_pool_id),
-  # If set to true, request will be denied if no ELB headers are present
+  # If set to true, request will be denied if no ELB headers are present. Defaults to true.
   require_header: false,
   # Requires the user to have the given group, otherwise the request will be denied
   has_group: "admin",

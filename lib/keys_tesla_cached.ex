@@ -5,7 +5,7 @@ defmodule ELBCognitoPlug.TeslaCachedKeys do
   @elb_table :elb_jwk_keys
 
   def get_cognito_jwk(id, opts) do
-    get_cognito_keys(opts[:region], opts[:pool_id])
+    get_cognito_keys(opts[:cognito_region], opts[:cognito_pool_id])
     |> Map.get(id)
     |> case do
       nil ->
@@ -17,7 +17,7 @@ defmodule ELBCognitoPlug.TeslaCachedKeys do
   end
 
   def get_elb_jwk(id, opts) do
-    {:ok, region} = Keyword.fetch(opts, :region)
+    {:ok, region} = Keyword.fetch(opts, :cognito_region)
 
     key =
       get_or_cache(@elb_table, {region, id}, fn ->

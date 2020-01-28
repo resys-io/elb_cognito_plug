@@ -11,8 +11,8 @@ defmodule ELBCognitoPlugTest do
 
     opts =
       opts
-      |> Keyword.put(:region, "region")
-      |> Keyword.put(:pool_id, "pool_id")
+      |> Keyword.put(:cognito_region, "region")
+      |> Keyword.put(:cognito_pool_id, "pool_id")
       |> Keyword.put(:keys_module, MockCognitoKeys)
 
     conn(:get, "/")

@@ -21,20 +21,37 @@ and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/elb_cognito_plug](https://hexdocs.pm/elb_cognito_plug).
 
 ## Usage
+### Configuration
+You can configure the plug either through configuration or plug options:
+
+```elixir
+config :elb_cognito_plug,
+  cognito_region: "eu-central-1",
+  cognito_pool_id: "eu-central-1_gbM12ad3"
+```
+
 ```elixir
 plug ELBCognitoPlug,
-  # Cognito region (required)
-  region: Application.get_env(:my_app, :cognito_region),
-  # Cognito pool id (required)
-  pool_id: Application.get_env(:my_app, :cognito_pool_id),
-  # If set to true, request will be denied if no ELB headers are present. Defaults to true.
+  cognito_region: "eu-central-1",
+  cognito_pool_id: "eu-central-1_gbM12ad3",
   require_header: false,
-  # Requires the user to have the given group, otherwise the request will be denied
   has_group: "admin",
-  # Assigns the decoded JWT data to the given atom
-  assign_to: :user_info
-  # Allows you to define custom key-fetching behaviour. Default behaviour pulls key from AWS with
-  # Tesla and caches them in ETS. See `ELBCognitoPlug.Cognito.Keys` and 
-  # `ELBCognitoPlug.Cognito.TeslaCachedKeys`
+  assign_to: :user_info,
   keys_module: MyKeyModule
 ```
+
+The options used through configuration are always evaluated at run-time. Options provided through
+the plug are evaluated depending on the `:init_mode` used in [`Plug.Builder`](https://hexdocs.pm/plug/Plug.Builder.html).
+If an option is defined in both places, the option provided through the plug will take precedence
+over the one in configuration.
+
+### Options
+- `:cognito_region` - **required** Cognito region
+- `:cognito_pool_id` - **required** Cognito pool id
+- `:require_header` - if set to `true`, request will be denied if no ELB headers are present.
+Defaults to `true`.
+- `:has_group` - requires the user to have the given group, otherwise the request will be denied
+- `:assign_to` - assigns the decoded JWT data to the given atom
+- `:keys_module` - allows you to define custom key-fetching behaviour. Default behaviour pulls key
+from AWS with Tesla and caches them in ETS. See `ELBCognitoPlug.Cognito.Keys` and 
+`ELBCognitoPlug.Cognito.TeslaCachedKeys`

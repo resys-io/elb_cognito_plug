@@ -12,7 +12,7 @@ defmodule ELBCognitoPlug do
     case {get_req_header(conn, "x-amzn-oidc-accesstoken"),
           get_req_header(conn, "x-amzn-oidc-data")} do
       {[access_token], [data]} ->
-        verification_opts = Keyword.take(opts, [:keys_module, :region, :pool_id])
+        verification_opts = Application.get_all_env(:elb_cognito_plug) ++ opts
         {:ok, cognito_claims} = verify_cognito_jwt(access_token, verification_opts)
         {:ok, elb_claims} = verify_elb_jwt(data, verification_opts)
 

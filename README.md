@@ -37,7 +37,18 @@ plug ELBCognitoPlug,
   require_header: false,
   has_group: "admin",
   assign_to: :user_info,
+  handle_error: &handle_error/3,
   keys_module: MyKeyModule
+
+defp handle_error(:missing_headers, conn, _opts) do 
+  conn
+  |> send_resp(401, "")
+  |> halt()
+end
+
+defp handle_error(reason, conn, _opts) do
+  redirect(conn, to: "/login")
+end
 ```
 
 The options used through configuration are always evaluated at run-time. Options provided through
@@ -52,6 +63,8 @@ over the one in configuration.
 Defaults to `true`.
 - `:has_group` - requires the user to have the given group, otherwise the request will be denied
 - `:assign_to` - assigns the decoded JWT data to the given atom
+- `:handle_error` - allows you to customize what to do when an error happens. Default behaviour
+is to return 401 with an empty body. Possible error reasons: `:missing_headers`, `:missing_group`
 - `:keys_module` - allows you to define custom key-fetching behaviour. Default behaviour pulls key
 from AWS with Tesla and caches them in ETS. See `ELBCognitoPlug.Cognito.Keys` and 
 `ELBCognitoPlug.Cognito.TeslaCachedKeys`

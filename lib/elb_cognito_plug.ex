@@ -17,33 +17,37 @@ defmodule ELBCognitoPlug do
         {:ok, elb_claims} = verify_elb_jwt(data, verification_opts)
 
         conn
-        |> check_has_group(cognito_claims, opts[:has_group])
+        |> check_has_group(cognito_claims, opts)
         |> assign_claims(cognito_claims, elb_claims, opts[:assign_to])
 
       _else ->
         if Keyword.get(opts, :require_header, true) do
-          deny(conn)
+          deny(:missing_headers, conn, opts)
         else
           conn
         end
     end
   end
 
-  defp deny(conn) do
-    conn
-    |> send_resp(401, "")
-    |> halt()
-  end
-
-  defp check_has_group(conn, _claims, nil) do
-    conn
-  end
-
-  defp check_has_group(conn, claims, group) do
-    if Enum.member?(claims["cognito:groups"], group) do
-      conn
+  defp deny(reason, conn, opts) do
+    if handle_error = opts[:handle_error] do
+      handle_error.(reason, conn, opts)
     else
-      deny(conn)
+      conn
+      |> send_resp(401, "")
+      |> halt()
+    end
+  end
+
+  defp check_has_group(conn, claims, opts) do
+    if group = opts[:has_group] do
+      if Enum.member?(claims["cognito:groups"], group) do
+        conn
+      else
+        deny(:missing_group, conn, opts)
+      end
+    else
+      conn
     end
   end
 

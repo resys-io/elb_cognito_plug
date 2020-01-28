@@ -74,4 +74,33 @@ defmodule ELBCognitoPlugTest do
     assert conn.status == 200
     assert conn.assigns.user_claims != nil
   end
+
+  test "allows custom response if `handle_error` provided" do
+    conn =
+      call(
+        require_header: true,
+        handle_error: fn reason, conn, _opts ->
+          assert reason == :missing_headers
+          send_resp(conn, 500, "test")
+        end
+      )
+
+    assert conn.status == 500
+    assert conn.resp_body == "test"
+  end
+
+  test "provides `:missing_group` as reason to `handle_error` if `has_group` provided, but no such group in jwt" do
+    conn =
+      call(
+        require_header: true,
+        has_group: "superuser",
+        jwts: {@cognito_jwt, @elb_jwt},
+        handle_error: fn reason, conn, _opts ->
+          assert reason == :missing_group
+          send_resp(conn, 401, "")
+        end
+      )
+
+    assert conn.status == 401
+  end
 end

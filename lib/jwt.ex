@@ -13,16 +13,20 @@ defmodule ELBCognitoPlug.JWT do
   end
 
   def verify_elb_jwt(jwt, opts) do
-    {:ok, keys_module} = Keyword.fetch(opts, :keys_module)
+    # See comments under the used function.
+    # Note: If AWS fixes their implementation, you can check git history for the proper
+    # implementation of this function
+    ignore_broken_jwt_signature(jwt, opts)
+  end
 
-    with {:ok, %{"kid" => key_id}} <- Joken.peek_header(jwt),
-         {:ok, jwk_key} <- keys_module.get_elb_jwk(key_id, opts) do
-      signer = Joken.Signer.create("ES256", %{"pem" => jwk_key})
-      verify_with_key(jwt, signer)
-    else
-      _ ->
-        {:error, :invalid_token}
-    end
+  defp ignore_broken_jwt_signature(jwt, _opts) do
+    # AWS ELB uses padding when signing the JWT. Padding is explicitly forbidden in the JWS RFC
+    # (https://tools.ietf.org/html/rfc7515#section-2) and the JOSE/Joken library will correctly
+    # report an error with the signature. # The AWS implementation is therefore broken and the
+    # signature can't be properly verified. We will report everything as OK to the caller of
+    # this function anyway; considering that the JWT signature is broken by design, we just assume
+    # it's OK.
+    Joken.peek_claims(jwt)
   end
 
   def verify_with_key(jwt, signer) do

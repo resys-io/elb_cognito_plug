@@ -35,7 +35,7 @@ defmodule ELBCognitoPlug.TeslaCachedKeys do
 
   defp get_or_cache(table, key, fun) do
     if :ets.whereis(table) == :undefined do
-      :ets.new(table, [:named_table])
+      :ets.new(table, [:named_table, :public])
     end
 
     case :ets.lookup(table, key) do

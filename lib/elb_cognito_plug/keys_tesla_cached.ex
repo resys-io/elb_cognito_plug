@@ -1,9 +1,24 @@
 defmodule ELBCognitoPlug.TeslaCachedKeys do
+  use GenServer
   @behaviour ELBCognitoPlug.Keys
 
   @cognito_table :cognito_jwk_keys
   @elb_table :elb_jwk_keys
 
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, [@cognito_table, @elb_table], opts)
+  end
+
+  # GenServer
+  def init(tables) do
+    for table <- tables do
+      :ets.new(table, [:named_table, :public])
+    end
+
+    {:ok, nil}
+  end
+
+  # Public
   def get_cognito_jwk(id, opts) do
     get_cognito_keys(opts[:cognito_region], opts[:cognito_pool_id])
     |> Map.get(id)
@@ -34,10 +49,6 @@ defmodule ELBCognitoPlug.TeslaCachedKeys do
   end
 
   defp get_or_cache(table, key, fun) do
-    if :ets.whereis(table) == :undefined do
-      :ets.new(table, [:named_table, :public])
-    end
-
     case :ets.lookup(table, key) do
       [{_key, value}] ->
         value

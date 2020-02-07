@@ -12,7 +12,7 @@ defmodule ELBCognitoPlug do
     case {get_req_header(conn, "x-amzn-oidc-accesstoken"),
           get_req_header(conn, "x-amzn-oidc-data")} do
       {[access_token], [data]} ->
-        opts = Application.get_all_env(:elb_cognito_plug) ++ opts
+        opts = build_runtime_conf(opts)
         {:ok, cognito_claims} = verify_cognito_jwt(access_token, opts)
         {:ok, elb_claims} = verify_elb_jwt(data, opts)
 
@@ -27,6 +27,12 @@ defmodule ELBCognitoPlug do
           conn
         end
     end
+  end
+
+  defp build_runtime_conf(opts) do
+    opts = Application.get_all_env(:elb_cognito_plug) ++ opts
+    [region, _] = opts[:cognito_pool_id] |> String.split("_")
+    Keyword.put(opts, :cognito_region, region)
   end
 
   defp deny(reason, conn, opts) do

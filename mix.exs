@@ -37,9 +37,9 @@ defmodule ELBCognitoPlug.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:plug, "~> 1.8.3"},
+      {:plug, "~> 1.8"},
       {:joken, "~> 2.2"},
-      {:tesla, "~> 1.2.1"},
+      {:tesla, "~> 1.2"},
       {:jason, "~> 1.1"}
     ]
   end

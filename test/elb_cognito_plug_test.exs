@@ -75,6 +75,20 @@ defmodule ELBCognitoPlugTest do
     assert conn.assigns.user_claims != nil
   end
 
+  test "assigns correct data" do
+    conn = call(require_header: true, assign_to: :user_claims, jwts: {@cognito_jwt, @elb_jwt})
+
+    assert conn.assigns.user_claims == %{
+             given_name: "Some",
+             family_name: "User",
+             email: "user@example.com",
+             sub: "5eb393f4-de29-4386-b520-49fd1de1b122",
+             username: "5eb393f4-de29-4386-b520-49fd1de1b122",
+             groups: ["admin", "other-group"],
+             exp: 1_576_460_121
+           }
+  end
+
   test "allows custom response if `handle_error` provided" do
     conn =
       call(

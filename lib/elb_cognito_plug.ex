@@ -67,7 +67,7 @@ defmodule ELBCognitoPlug do
       sub: cognito_claims["sub"],
       username: cognito_claims["username"],
       groups: cognito_claims["cognito:groups"],
-      exp: elb_claims["exp"]
+      exp: cognito_claims["exp"]
     }
 
     assign(conn, to, data)

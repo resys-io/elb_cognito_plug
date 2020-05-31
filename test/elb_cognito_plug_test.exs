@@ -85,7 +85,7 @@ defmodule ELBCognitoPlugTest do
              sub: "5eb393f4-de29-4386-b520-49fd1de1b122",
              username: "5eb393f4-de29-4386-b520-49fd1de1b122",
              groups: ["admin", "other-group"],
-             exp: 1_576_460_121
+             exp: 1_576_463_559
            }
   end
 
